@@ -53,6 +53,9 @@
                         <div id="videoContainer">
                             <el-button id="selectVideo" type="primary">选择视频<i class="el-icon-upload el-icon--right"></i></el-button>
                         </div>
+                        <div class="vidoe-progress" v-if="showProgress">
+                            <el-progress :text-inside="true" :stroke-width="14" :percentage="vidoeProgressValue"></el-progress>
+                        </div>
                     </el-form-item>
 
                     <el-form-item label="测试按钮" >
@@ -69,11 +72,13 @@
 </template>
 <style>
     h3{color:#5e6d82;margin-bottom: 10px}
+    .vidoe-progress{margin-top: 5px}
 </style>
 <script>
     import inputTag from 'vue-input-tag'
     export default{
         mounted(){
+            var myVue=this;
             var uploader = Qiniu.uploader({
                 runtimes: 'html5,flash,html4',      // 上传模式，依次退化
                 browse_button: 'selectVideo',         // 上传选择的点选按钮，必需
@@ -126,9 +131,11 @@
                     },
                     'BeforeUpload': function(up, file) {
                         // 每个文件上传前，处理相关的事情
+                        myVue.showProgress=true;
                     },
                     'UploadProgress': function(up, file) {
                         // 每个文件上传时，处理相关的事情
+                        myVue.vidoeProgressValue=file.percent;
                     },
                     'FileUploaded': function(up, file, info) {
                         // 每个文件上传成功后，处理相关的事情
@@ -147,6 +154,7 @@
                     },
                     'UploadComplete': function() {
                         //队列文件处理完毕后，处理相关的事情
+                        myVue.showProgress=false;
                     },
                     'Key': function(up, file) {
                         // 若想在前端对每个文件的key进行个性化处理，可以配置该函数
@@ -171,7 +179,9 @@
                     },
                     v_tags:[] //视频标签
                 },
-                showVPic:false
+                showVPic:false,
+                vidoeProgressValue:0,
+                showProgress:false
             }
         },
         methods:{
