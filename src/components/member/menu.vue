@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-menu mode="vertical" default-active="1" class="menu" :router="true">
-            <el-menu-item-group title="视频管理">
+            <el-menu-item-group title="视频管理" class="menutitle">
                 <el-menu-item index="/pub"><i class="el-icon-message"></i>发布视频</el-menu-item>
                 <el-menu-item index="/vlist"><i class="el-icon-message"></i>视频列表</el-menu-item>
             </el-menu-item-group>
@@ -14,6 +14,7 @@
 </template>
 <style>
      .menu{background: #fff}
+     .menutitle div{font-size: 20px}
 </style>
 <script>
      
