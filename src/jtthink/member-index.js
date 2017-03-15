@@ -13,6 +13,12 @@ Vue.use(ElementUI);
 Vue.use(global);
 Vue.use(VueResource);
 
+//引用路由
+import VueRouter from "vue-router"
+Vue.use(VueRouter);
+import {routerConfig} from "./../config/RouterConfig";
+
+
 import ResModule from "./../Store/modules/ResModule";//应用资源模块
 const  vuex_config=new Vuex.Store({
  modules:{
@@ -22,7 +28,8 @@ const  vuex_config=new Vuex.Store({
 Vue.component("navbar",navbar);
 new Vue({
  el:".container",
- store:vuex_config
+ store:vuex_config,
+ router:routerConfig
 });
 
 
