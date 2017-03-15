@@ -22,5 +22,12 @@ export  default{
             })
         }
 
+    },
+    getters:{
+        navForVideoClass:state=>{
+            return state.NavBar.filter((item)=>{
+                return item.nav_text!="首页";
+            })
+        }
     }
 }
