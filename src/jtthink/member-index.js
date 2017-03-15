@@ -5,6 +5,7 @@ import ElementUI from "element-ui"
 import "./../css/common.css";
 import 'element-ui/lib/theme-default/index.css'
 import navbar from "./../components/member/navbar.vue";//加载导航栏
+require("qiniu-js/dist/qiniu.js");
 
 import VueResource from "vue-resource"
 import global from "./global";//我们自己写的全局插件
