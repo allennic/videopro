@@ -10,7 +10,7 @@ module.exports =
       },
     output: {
         publicPath: "http://127.0.0.1:8080/",
-        path: __dirname+'/src/webapp/js',  //输出文件夹
+        path: __dirname+'/src/webapp/js/',  //输出文件夹
         filename:'[name].js'   //最终打包生成的文件名(just 文件名，不带路径的哦)
     },
    resolve: {
@@ -34,7 +34,7 @@ module.exports =
     plugins:[
         new HtmlWebpackPlugin({
           //  filename: __dirname+'/src/webapp/member/index.html',//目标文件
-            filename:"/member/index.html",//用户后台首页
+            filename:"member/index.html",//用户后台首页
             template: __dirname+'/src/pages/member/index.html',//模板文件
             inject:'body',
             hash:true,
@@ -48,5 +48,4 @@ module.exports =
             chunks:["web-index"]
         }),
     ]
-
-}
+};
