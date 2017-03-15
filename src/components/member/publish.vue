@@ -44,6 +44,15 @@
                             <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
                         </el-upload>
                     </el-form-item>
+
+                    <el-form-item label="标签" prop="v_class">
+                        <input-tag   :tags="video.v_tags" placeholder="输入标签按回车"></input-tag>
+                    </el-form-item>
+
+                    <el-form-item label="测试按钮" >
+                        <button @click="testBtn" >测试按钮</button>
+                    </el-form-item>
+
                 </el-form>
             </el-col>
 
@@ -56,7 +65,7 @@
     h3{color:#5e6d82;margin-bottom: 10px}
 </style>
 <script>
-     
+    import inputTag from 'vue-input-tag'
     export default{
         data(){
             return{
@@ -65,8 +74,10 @@
                     v_class:2,
                     v_pic:{
                         name:"",
-                        url:""
-                    }
+                        url:"",
+                        id:0
+                    },
+                    v_tags:[] //视频标签
                 },
                 showVPic:false
             }
@@ -79,6 +90,7 @@
                 {
                     this.video.v_pic.url=file.url;
                     this.video.v_pic.name=file.name;
+                    this.video.v_pic.id=file.id;
                 }
                 else
                 {
@@ -96,9 +108,15 @@
                 //移除图片
                 this.video.v_pic.url="";
                 this.video.v_pic.name="";
+            },
+            testBtn()//测试专用按钮
+            {
+                alert(this.video.v_tags)
             }
+
         },
         components:{
+            "input-tag":inputTag
 
         }
     }

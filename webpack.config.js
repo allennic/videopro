@@ -24,7 +24,7 @@ module.exports =
     module:{
         loaders:[
             {test:/\.js$/,loader:"babel-loader",query:{compact:true},exclude: /node_modules/},
-            {test:/\.vue$/,loader:"vue-loader", exclude: /node_modules/},
+            {test:/\.vue$/,loader:"vue-loader"},//去除exclude，就不需要处理node_mod的内容
             {test:/\.(eot|woff|woff2|svg|ttf)([\?]?.*)$/,loader:"file-loader" },
             {test: /\.css$/, loader: 'style-loader!css-loader'},
             {test: /\.(png|jpe?g|gif|svg)(\?\S*)?$/, loader: 'file-loader', query: {name: '[name].[ext]?[hash]'}
