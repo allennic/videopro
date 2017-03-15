@@ -1,5 +1,15 @@
 <template>
     <div>
+
+        <el-dialog title="图片预览" v-model="showVPic" size="small">
+            <span>
+                <img :src="video.v_pic.url"/>
+            </span>
+            <span slot="footer" class="dialog-footer">
+
+                <el-button type="primary" @click="showVPic = false">关 闭</el-button>
+            </span>
+        </el-dialog>
         <el-row>
             <el-col :span="12">
                 <h3>视频基本信息</h3>
@@ -16,6 +26,23 @@
                                     :value="item.nav_id">
                             </el-option>
                         </el-select>
+                    </el-form-item>
+
+                    <el-form-item label="封面" prop="v_class">
+                        <el-upload
+                                action="http://localhost:9090/video/uploadpic"
+                                drag
+                                :thumbnail-mode="true"
+                                :on-preview="handlePreview"
+                                :on-remove="handleRemove"
+                                :on-success="handleSuccess"
+                                :multiple="false"
+                                name="Uploader[file]"
+                        >
+                            <i class="el-icon-upload"></i>
+                            <div class="el-dragger__text">将文件拖到此处，或<em>点击上传</em></div>
+                            <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+                        </el-upload>
                     </el-form-item>
                 </el-form>
             </el-col>
@@ -35,8 +62,40 @@
             return{
                 video:{
                     v_title:"",
-                    v_class:2
+                    v_class:2,
+                    v_pic:{
+                        name:"",
+                        url:""
+                    }
+                },
+                showVPic:false
+            }
+        },
+        methods:{
+            handleSuccess(file)
+            {
+                //响应成功
+                if(file.status==1)
+                {
+                    this.video.v_pic.url=file.url;
+                    this.video.v_pic.name=file.name;
                 }
+                else
+                {
+                    alert("上传失败，请稍后再试");
+                }
+
+            },
+            handlePreview(file)
+            {
+                //预览
+                this.showVPic=true;
+            },
+            handleRemove(file)
+            {
+                //移除图片
+                this.video.v_pic.url="";
+                this.video.v_pic.name="";
             }
         },
         components:{
