@@ -50,11 +50,16 @@
                     </el-form-item>
 
                     <el-form-item label="上传视频" >
-                        <div id="videoContainer">
+                        <div id="videoContainer" v-if="!showProgress">
                             <el-button id="selectVideo" type="primary">选择视频<i class="el-icon-upload el-icon--right"></i></el-button>
                         </div>
                         <div class="vidoe-progress" v-if="showProgress">
                             <el-progress :text-inside="true" :stroke-width="14" :percentage="vidoeProgressValue"></el-progress>
+                            <img :src="options.iconsrc" class="myicon" @click="pauseUpload" />
+                        </div>
+
+                        <div class="vidoe-tip" v-if="showProgress">
+
                         </div>
                     </el-form-item>
 
@@ -73,13 +78,18 @@
 <style>
     h3{color:#5e6d82;margin-bottom: 10px}
     .vidoe-progress{margin-top: 5px}
+    .myicon{width:20px;cursor: pointer}
 </style>
 <script>
     import inputTag from 'vue-input-tag'
     export default{
+        created()
+        {
+
+        },
         mounted(){
             var myVue=this;
-            var uploader = Qiniu.uploader({
+            this.uploader = Qiniu.uploader({
                 runtimes: 'html5,flash,html4',      // 上传模式，依次退化
                 browse_button: 'selectVideo',         // 上传选择的点选按钮，必需
                 // 在初始化时，uptoken，uptoken_url，uptoken_func三个参数中必须有一个被设置
@@ -120,7 +130,7 @@
                 //},
                 filters: {
                     mime_types : [ //只允许上传图片和zip文件
-                        { title : "图片文件", extensions : "jpg,gif,png" },
+                        { title : "mp3,mp4文件", extensions : "mp3,mp4" },
                     ],
                 },
                 init: {
@@ -169,6 +179,12 @@
         },
         data(){
             return{
+                uploader:null,
+                options:{
+                    iconsrc:"/icons/pause.png",
+                    uploadpause:"/icons/pause.png",
+                    uploadstart:"/icons/start.png"
+                },
                 video:{
                     v_title:"",
                     v_class:2,
@@ -214,6 +230,19 @@
             testBtn()//测试专用按钮
             {
                 alert(this.video.v_tags)
+            },
+            pauseUpload()
+            {
+                if(this.options.iconsrc==this.options.uploadpause) //如果是暂停
+                {
+                    this.uploader.stop();
+                    this.options.iconsrc=this.options.uploadstart;//改成 开始按钮图标
+                }
+                else
+                {
+                    this.uploader.start();
+                    this.options.iconsrc=this.options.uploadpause;
+                }
             }
 
         },
