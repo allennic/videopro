@@ -13,20 +13,11 @@
         <el-row>
             <el-col :span="12">
                 <h3>视频基本信息</h3>
-                <el-form :model="video"  ref="ruleForm" label-width="100px" class="demo-ruleForm">
+                <el-form :model="video"  :rules="rules"  ref="videoForm1" label-width="100px" class="demo-ruleForm">
                     <el-form-item label="视频标题" prop="v_title">
                         <el-input v-model="video.v_title" placeholder="填写视频标题"></el-input>
                     </el-form-item>
 
-                    <el-form-item label="分类" prop="v_class">
-                        <el-select v-model="video.v_class" placeholder="请选择">
-                            <el-option
-                                    v-for="item in this.$store.getters.navForVideoClass"
-                                    :label="item.nav_text"
-                                    :value="item.nav_id">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
 
                     <el-form-item label="封面" prop="v_class">
                         <el-upload
@@ -45,13 +36,19 @@
                         </el-upload>
                     </el-form-item>
 
-                    <el-form-item label="标签" prop="v_class">
-                        <input-tag   :tags="video.v_tags" placeholder="输入标签按回车"></input-tag>
+                    <el-form-item label="视频简介" prop="v_intr">
+                        <el-input
+                                type="textarea"
+                                :rows="2"
+                                placeholder="视频简介(不超过300字)"
+                                v-model="video.v_intr">
+                        </el-input>
                     </el-form-item>
 
                     <el-form-item label="上传视频" >
                         <div id="videoContainer" v-if="!showProgress">
                             <el-button id="selectVideo" type="primary">选择视频<i class="el-icon-upload el-icon--right"></i></el-button>
+                            <el-tag type="success" v-if="uploadtip">上传完成</el-tag>
                         </div>
                         <div class="vidoe-progress" v-if="showProgress">
                             <el-progress :text-inside="true" :stroke-width="14" :percentage="vidoeProgressValue"></el-progress>
@@ -63,14 +60,39 @@
                         </div>
                     </el-form-item>
 
-                    <el-form-item label="测试按钮" >
-                        <button @click="testBtn" >测试按钮</button>
-                    </el-form-item>
 
                 </el-form>
             </el-col>
 
-            <el-col :span="12">
+            <el-col :span="10" :push="2">
+
+                <h3>选项</h3>
+                <el-form :model="video" :rules="rules"  ref="videoForm2" label-width="100px" class="demo-ruleForm">
+                    <el-form-item label="分类" prop="v_class">
+                        <el-select v-model="video.v_class" placeholder="请选择"  class="v_class">
+                            <el-option
+                                    v-for="item in this.$store.getters.navForVideoClass"
+                                    :label="item.nav_text"
+                                    :value="item.nav_id">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="标签" prop="v_tags">
+                        <input-tag   :tags="video.v_tags" placeholder="输入标签按回车"></input-tag>
+                    </el-form-item>
+                    <el-form-item label="是否收费" prop="v_isfree">
+                        <el-radio class="radio" v-model="video.v_mode" label="free">免费</el-radio>
+                        <el-radio class="radio" v-model="video.v_mode" label="pay">收费</el-radio>
+                    </el-form-item>
+                    <el-form-item label="收费金额" prop="v_money">
+                        <el-input v-model="video.v_money" placeholder="输入0到500之间的正整数" v-bind:disabled="showMoneyText"></el-input>
+
+                    </el-form-item>
+
+                    <el-form-item   >
+                        <el-button type="danger" size="large" @click="submitVideo">发布视频</el-button>
+                    </el-form-item>
+                </el-form>
             </el-col>
         </el-row>
     </div>
@@ -141,6 +163,7 @@
                     },
                     'BeforeUpload': function(up, file) {
                         // 每个文件上传前，处理相关的事情
+                        myVue.uploadtip=false;
                         myVue.showProgress=true;
                     },
                     'UploadProgress': function(up, file) {
@@ -158,12 +181,17 @@
                         // var domain = up.getOption('domain');
                         // var res = parseJSON(info);
                         // var sourceLink = domain +"/"+ res.key; 获取上传成功后的文件的Url
+
+                        var res = eval("("+info+")");
+
+                        myVue.video.v_videokey=res.key; //这一步需要设置，否则上传后获取不到值
                     },
                     'Error': function(up, err, errTip) {
                         //上传出错时，处理相关的事情
                     },
                     'UploadComplete': function() {
                         //队列文件处理完毕后，处理相关的事情
+                        myVue.uploadtip=true;
                         myVue.showProgress=false;
                     },
                     'Key': function(up, file) {
@@ -178,6 +206,19 @@
             });
         },
         data(){
+            let moneyValidator = (rule, value, callback) => {
+                //视频金额验证
+                let isValidate=false
+                if(/\d+/.test(value) && value>=0 && value<=500)
+                {
+                    callback();
+                }
+                else
+                {
+                    callback(new Error('请输入0~500之间的数字'));
+                }
+
+            };
             return{
                 uploader:null,
                 options:{
@@ -193,11 +234,29 @@
                         url:"",
                         id:0
                     },
-                    v_tags:[] //视频标签
+                    v_tags:[], //视频标签,
+                    v_mode:"free", //是否收费费用 ,如果是0代表免费,反之则收费
+                    v_money:0,
+                    v_videokey:"" //上传到七牛后的key
                 },
+                uploadtip:false,
                 showVPic:false,
                 vidoeProgressValue:0,
-                showProgress:false
+                showProgress:false,
+                rules: {
+                    v_title: [
+                        { required: true, message: '视频标题必填', trigger: 'blur' },
+                        { min: 1, max: 20, message: '长度在 1 到 20个字符', trigger: 'blur' }
+                    ],
+                    v_intr: [
+                        { required: true, message: '视频简介必填', trigger: 'blur' },
+                        { min: 1, max: 30, message: '长度在 1 到 30个字符', trigger: 'blur' }
+                    ],
+                    v_money: [
+                        { validator: moneyValidator, trigger: 'blur' }
+                    ],
+
+                }
             }
         },
         methods:{
@@ -231,6 +290,37 @@
             {
                 alert(this.video.v_tags)
             },
+            submitVideo()
+            {
+                var myvue=this;
+                this.$refs["videoForm1"].validate(function(v1){
+                    if(v1) //如果验证第一个表单完成，还要验证第二个表单
+                    {
+                        myvue.$refs["videoForm2"].validate(function(v2){
+                            if(v2)  //第二个验证完成，还需要判断对象里的值是否有
+                            {
+                                if(myvue.video.v_videokey=="" || myvue.video.v_pic.id==0) //粗糙的做个判断
+                                {
+                                    alert("请上传视频封面和视频");
+                                }
+                                else
+                                {
+                                    //这里可以 入库了
+                                    myvue.$store.dispatch("submitVideo",myvue.video);
+                                }
+                            }
+                            else
+                            {
+                                alert("请正确填写视频信息")
+                            }
+                        })
+                    }
+                    else
+                    {
+                        alert("请正确填写视频信息")
+                    }
+                })
+            },
             pauseUpload()
             {
                 if(this.options.iconsrc==this.options.uploadpause) //如果是暂停
@@ -245,6 +335,17 @@
                 }
             }
 
+        },
+        computed:{
+            showMoneyText()
+            {
+                if(this.video.v_mode=="free")
+                {
+                    this.video.v_money=0;
+                    return true;
+                }
+                return false;
+            }
         },
         components:{
             "input-tag":inputTag

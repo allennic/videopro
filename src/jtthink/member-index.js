@@ -21,9 +21,11 @@ import {routerConfig} from "./../config/RouterConfig";
 
 
 import ResModule from "./../Store/modules/ResModule";//应用资源模块
+import VideoModule from "./../Store/modules/VideoModule";//视频提交模块
 const  vuex_config=new Vuex.Store({
  modules:{
-  res:ResModule
+  res:ResModule,
+  video:VideoModule
  }
 });
 Vue.component("navbar",navbar);
