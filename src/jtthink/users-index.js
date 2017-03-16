@@ -24,10 +24,12 @@ import {routerConfig_users} from "./../config/RouterConfig";
 
 
 import ResModule from "./../Store/modules/ResModule";//应用资源模块
+import  UserModule from "./../Store/modules/UserModule";//用户模块
 
 const  vuex_config=new Vuex.Store({
     modules:{
         res:ResModule,
+        users:UserModule
 
     }
 });
