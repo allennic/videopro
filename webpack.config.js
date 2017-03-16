@@ -6,7 +6,9 @@ module.exports =
     {
        "member-index":[__dirname+'/src/jtthink/member-index.js'
            ,'webpack-dev-server/client?http://127.0.0.1:8080'],
-       "web-index":[__dirname+'/src/jtthink/web-index.js']
+       "web-index":[__dirname+'/src/jtthink/web-index.js'],
+        "users-index":[__dirname+'/src/jtthink/users-index.js'
+            ,'webpack-dev-server/client?http://127.0.0.1:8080'],
       },
     output: {
         publicPath: "http://127.0.0.1:8080/",
@@ -24,7 +26,7 @@ module.exports =
     module:{
         loaders:[
             {test:/\.js$/,loader:"babel-loader",query:{compact:true},exclude: /node_modules/},
-            {test:/\.vue$/,loader:"vue-loader"},//去除exclude，就不需要处理node_mod的内容
+            {test:/\.vue$/,loader:"vue-loader"},//去除exclude，就不需要处理node_modules的内容vue-input-tag
             {test:/\.(eot|woff|woff2|svg|ttf)([\?]?.*)$/,loader:"file-loader" },
             {test: /\.css$/, loader: 'style-loader!css-loader'},
             {test: /\.(png|jpe?g|gif|svg)(\?\S*)?$/, loader: 'file-loader', query: {name: '[name].[ext]?[hash]'}
@@ -46,6 +48,13 @@ module.exports =
             inject:'body',
             hash:true,
             chunks:["web-index"]
+        }),
+        new HtmlWebpackPlugin({
+            filename:"users/index.html",//用户登录或注册
+            template: __dirname+'/src/pages/users/index.html',//模板文件
+            inject:'body',
+            hash:true,
+            chunks:["users-index"]
         }),
     ]
 };
